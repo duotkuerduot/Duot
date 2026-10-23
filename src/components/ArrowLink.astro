@@ -1,0 +1,33 @@
+---
+/** An understated internal link with a → arrow, e.g. "All writing →". */
+import Icon from './Icon.astro';
+
+interface Props {
+  href: string;
+  label: string;
+}
+
+const { href, label } = Astro.props;
+---
+
+<a class="arrow-link" href={href}>{label}<Icon name="arrow-right" /></a>
+
+<style>
+  .arrow-link {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+
+  .arrow-link:hover {
+    color: var(--color-accent-strong);
+  }
+
+  .arrow-link:hover :global(.icon) {
+    transform: translateX(2px);
+  }
+</style>

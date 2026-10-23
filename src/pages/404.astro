@@ -1,0 +1,12 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+---
+
+<BaseLayout title="Page not found" noindex>
+  <PageHeader
+    title="Page not found"
+    intro="The page you’re looking for doesn’t exist, or it may have moved."
+  />
+  <p><a href="/">Go to the home page</a></p>
+</BaseLayout>

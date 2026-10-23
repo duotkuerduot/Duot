@@ -1,0 +1,89 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ArrowLink from '../components/ArrowLink.astro';
+import ExplorationList from '../components/ExplorationList.astro';
+import WritingList from '../components/WritingList.astro';
+import { EXPLORATIONS } from '../data/explorations';
+import { PROFILES, SITE } from '../data/site';
+import { ARTICLES, newestFirst } from '../data/writing';
+
+const recentWriting = newestFirst(ARTICLES).slice(0, 3);
+
+// Structured data that helps search engines identify the person behind the site.
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: SITE.name,
+  url: new URL('/', Astro.site).href,
+  jobTitle: 'Data Scientist',
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Nairobi',
+    addressCountry: 'KE',
+  },
+  sameAs: Object.values(PROFILES).map((profile) => profile.href),
+};
+---
+
+<BaseLayout>
+  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(person)} />
+
+  <section class="intro" aria-labelledby="intro-title">
+    <h1 id="intro-title" class="display">{SITE.name}</h1>
+    {/* The opening statement is the site description, set in src/data/site.ts. */}
+    <p class="intro__statement lead">{SITE.description}</p>
+    <p class="intro__note muted">This site is a home for my work, writing, and ongoing explorations.</p>
+  </section>
+
+  <section class="home-section" aria-labelledby="explorations-title">
+    <div class="section-heading">
+      <h2 id="explorations-title">Selected explorations</h2>
+      <ArrowLink href="/explorations" label="All explorations" />
+    </div>
+    <ExplorationList items={EXPLORATIONS} headingLevel={3} />
+  </section>
+
+  <section class="home-section" aria-labelledby="writing-title">
+    <div class="section-heading">
+      <h2 id="writing-title">Recent writing</h2>
+      <ArrowLink href="/blog" label="All writing" />
+    </div>
+    <WritingList articles={recentWriting} headingLevel={3} showCategory />
+  </section>
+</BaseLayout>
+
+<style>
+  .intro {
+    padding-bottom: clamp(3.5rem, 2.5rem + 4vw, 6rem);
+  }
+
+  .intro__statement {
+    max-width: 44rem;
+    margin-top: var(--space-5);
+    text-wrap: balance;
+  }
+
+  .intro__note {
+    max-width: 34rem;
+    margin-top: var(--space-4);
+  }
+
+  .home-section + .home-section {
+    margin-top: clamp(3.5rem, 2.5rem + 3vw, 5rem);
+  }
+
+  .section-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+
+  .section-heading h2 {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: -0.006em;
+  }
+</style>

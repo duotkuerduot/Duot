@@ -1,0 +1,55 @@
+---
+import ExternalLink from './ExternalLink.astro';
+import { PROFILES, SITE } from '../data/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__inner">
+      <p>© {year} {SITE.name} · {SITE.location}</p>
+      <ul class="site-footer__links" role="list" aria-label="Elsewhere">
+        {
+          Object.values(PROFILES).map((profile) => (
+            <li>
+              <ExternalLink href={profile.href} label={profile.label} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  .site-footer__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-5);
+    padding-block: var(--space-5) clamp(2rem, 1.5rem + 2vw, 3rem);
+    border-top: 1px solid var(--color-surface);
+  }
+
+  .site-footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    margin: 0;
+  }
+
+  .site-footer__links :global(a) {
+    text-decoration: none;
+  }
+
+  .site-footer__links :global(a:hover) {
+    text-decoration-line: underline;
+  }
+</style>

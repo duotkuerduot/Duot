@@ -1,0 +1,37 @@
+---
+/**
+ * A link to another website. Opens in a new tab and tells screen-reader users
+ * so. By default it ends with a ↗ icon, kept on the same line as the last word;
+ * pass icon={false} for links inside running text.
+ */
+import Icon from './Icon.astro';
+
+interface Props {
+  href: string;
+  label: string;
+  /** Extra words for screen readers when the label alone is ambiguous, e.g. the project name. */
+  context?: string;
+  /** Show the ↗ icon. Defaults to true. */
+  icon?: boolean;
+  class?: string;
+}
+
+const { href, label, context, icon = true, class: className } = Astro.props;
+
+const words = label.trim().split(/\s+/);
+const lastWord = words.pop();
+const leadingWords = words.length > 0 ? `${words.join(' ')} ` : '';
+const hiddenText = context ? ` (${context}, opens in a new tab)` : ' (opens in a new tab)';
+---
+
+<a
+  class:list={['external-link', className]}
+  href={href}
+  target="_blank"
+  rel="noopener noreferrer">{icon ? (<>{leadingWords}<span class="nowrap">{lastWord}<Icon name="arrow-up-right" /></span></>) : label}<span class="visually-hidden">{hiddenText}</span></a>
+
+<style>
+  .external-link:hover :global(.icon) {
+    transform: translate(1px, -1px);
+  }
+</style>

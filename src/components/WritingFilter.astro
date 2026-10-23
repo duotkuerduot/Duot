@@ -1,0 +1,210 @@
+---
+/**
+ * The Artistic / Technical toggle on the Blog page.
+ *
+ * Built on native radio buttons, so it works with the keyboard (Tab, then the
+ * arrow keys) and with screen readers. Filtering is done in CSS with :has(),
+ * which means it also works without JavaScript; the small script below adds a
+ * spoken summary, support for links like /blog?category=technical, and a
+ * fallback for browsers without :has().
+ */
+import WritingList from './WritingList.astro';
+import { WRITING_CATEGORIES, categorySlug, type Article } from '../data/writing';
+
+interface Props {
+  articles: readonly Article[];
+}
+
+const { articles } = Astro.props;
+
+const options = WRITING_CATEGORIES.map((label) => ({
+  label,
+  slug: categorySlug(label),
+}));
+---
+
+<div class="writing-filter" data-writing-filter>
+  <fieldset class="writing-filter__fieldset">
+    <legend class="visually-hidden">Show writing by category</legend>
+    <div class="segmented">
+      {
+        options.map((option, index) => (
+          <label class="segmented__option">
+            <input
+              class="segmented__input"
+              type="radio"
+              name="writing-category"
+              value={option.slug}
+              data-label={option.label}
+              checked={index === 0}
+            />
+            <span class="segmented__label">{option.label}</span>
+          </label>
+        ))
+      }
+    </div>
+  </fieldset>
+
+  <p class="visually-hidden" role="status" data-writing-status></p>
+
+  <WritingList articles={articles} headingLevel={2} />
+</div>
+
+<style>
+  .writing-filter__fieldset {
+    min-inline-size: 0;
+    margin: 0 0 var(--space-5);
+    padding: 0;
+    border: 0;
+  }
+
+  .segmented {
+    position: relative;
+    display: inline-grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 3px;
+    border-radius: var(--radius-pill);
+    background-color: var(--color-surface);
+  }
+
+  .segmented__option {
+    position: relative;
+    display: block;
+  }
+
+  /* The real radio button covers its label: invisible, but clickable and focusable. */
+  .segmented__input {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .segmented__label {
+    position: relative;
+    z-index: 1;
+    display: block;
+    padding: 0.4375rem 1.375rem;
+    border-radius: var(--radius-pill);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: -0.006em;
+    text-align: center;
+    color: var(--color-text-muted);
+    transition:
+      color var(--duration) var(--ease-out),
+      background-color var(--duration) var(--ease-out);
+  }
+
+  .segmented__option:hover .segmented__label {
+    color: var(--color-text);
+  }
+
+  .segmented__input:checked + .segmented__label {
+    color: var(--color-text);
+    background-color: var(--color-surface-raised);
+    box-shadow: var(--shadow-raised);
+  }
+
+  .segmented__input:focus-visible + .segmented__label {
+    outline: 2px solid var(--color-accent-strong);
+    outline-offset: 2px;
+  }
+
+  /* Where :has() is available, a single indicator slides between the options. */
+  @supports selector(:has(*)) {
+    .segmented::before {
+      content: '';
+      position: absolute;
+      top: 3px;
+      bottom: 3px;
+      left: 3px;
+      width: calc(50% - 3px);
+      border-radius: var(--radius-pill);
+      background-color: var(--color-surface-raised);
+      box-shadow: var(--shadow-raised);
+      transition: transform 260ms var(--ease-out);
+    }
+
+    .segmented:has(.segmented__option:nth-of-type(2) .segmented__input:checked)::before {
+      transform: translateX(100%);
+    }
+
+    .segmented__input:checked + .segmented__label {
+      background-color: transparent;
+      box-shadow: none;
+    }
+
+    /* Show only the articles in the selected category
+       (one line per category in WRITING_CATEGORIES). */
+    .writing-filter:has(.segmented__input[value='artistic']:checked)
+      :global([data-category]:not([data-category='artistic'])),
+    .writing-filter:has(.segmented__input[value='technical']:checked)
+      :global([data-category]:not([data-category='technical'])) {
+      display: none;
+    }
+  }
+
+  @media (max-width: 23.99rem) {
+    .segmented {
+      display: grid;
+    }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-writing-filter]');
+
+  if (root) {
+    const inputs = Array.from(root.querySelectorAll<HTMLInputElement>('.segmented__input'));
+    const entries = Array.from(root.querySelectorAll<HTMLElement>('[data-category]'));
+    const status = root.querySelector<HTMLElement>('[data-writing-status]');
+    const defaultValue = inputs[0]?.value;
+
+    const show = (value: string, announce: boolean) => {
+      let visible = 0;
+      for (const entry of entries) {
+        const matches = entry.dataset.category === value;
+        entry.hidden = !matches;
+        if (matches) visible += 1;
+      }
+
+      if (announce && status) {
+        const label = inputs.find((input) => input.value === value)?.dataset.label ?? value;
+        status.textContent = `Showing ${visible} ${label.toLowerCase()} ${visible === 1 ? 'piece' : 'pieces'}.`;
+      }
+    };
+
+    const updateUrl = (value: string) => {
+      const url = new URL(window.location.href);
+      if (value === defaultValue) url.searchParams.delete('category');
+      else url.searchParams.set('category', value);
+      window.history.replaceState(window.history.state, '', url);
+    };
+
+    // Honour links such as /blog?category=technical.
+    const requested = new URLSearchParams(window.location.search).get('category');
+    const initial =
+      inputs.find((input) => input.value === requested) ??
+      inputs.find((input) => input.checked) ??
+      inputs[0];
+
+    if (initial) {
+      initial.checked = true;
+      show(initial.value, false);
+    }
+
+    root.addEventListener('change', (event) => {
+      const target = event.target;
+      if (target instanceof HTMLInputElement && target.name === 'writing-category') {
+        show(target.value, true);
+        updateUrl(target.value);
+      }
+    });
+  }
+</script>

@@ -1,0 +1,84 @@
+---
+import Icon from './Icon.astro';
+import { categorySlug, type Article } from '../data/writing';
+import { formatDate } from '../lib/format';
+
+interface Props {
+  articles: readonly Article[];
+  /** Heading level for each article title, so it fits the page outline. */
+  headingLevel?: 2 | 3;
+  /** Show the Artistic / Technical label (not needed under the Blog toggle). */
+  showCategory?: boolean;
+}
+
+const { articles, headingLevel = 2, showCategory = false } = Astro.props;
+const Heading = `h${headingLevel}` as 'h2' | 'h3';
+---
+
+<ul class="entry-list" role="list">
+  {
+    articles.map((article) => (
+      <li class="entry writing-entry" data-category={categorySlug(article.category)}>
+        {article.published && (
+          <p class="entry__rail">
+            <time datetime={article.published}>{formatDate(article.published)}</time>
+          </p>
+        )}
+        <div class="entry__body">
+          <Heading class="entry__title">
+            <a class="writing-entry__link" href={article.url} target="_blank" rel="noopener noreferrer">
+              {article.title}
+              <span class="visually-hidden">{' (opens in a new tab)'}</span>
+            </a>
+          </Heading>
+          <p class="entry__description">{article.description}</p>
+          <p class="entry__meta">
+            {showCategory && (
+              <>
+                <span>{article.category}</span>
+                <span aria-hidden="true">·</span>
+              </>
+            )}
+            <span class="nowrap">
+              {article.platform}
+              <Icon name="arrow-up-right" />
+            </span>
+          </p>
+        </div>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .writing-entry__link {
+    text-decoration-color: transparent;
+  }
+
+  /* The whole entry is clickable; the title stays the link's accessible name. */
+  .writing-entry__link::after {
+    content: '';
+    position: absolute;
+    inset: 0 calc(-1 * var(--space-3));
+    border-radius: var(--radius-md);
+  }
+
+  .writing-entry__link:focus-visible {
+    outline: none;
+  }
+
+  .writing-entry__link:focus-visible::after {
+    outline: 2px solid var(--color-accent-strong);
+    outline-offset: 2px;
+  }
+
+  .writing-entry:hover .writing-entry__link {
+    color: var(--color-accent-strong);
+    text-decoration-color: currentColor;
+  }
+
+  .writing-entry:hover :global(.icon) {
+    color: var(--color-accent-strong);
+    transform: translate(1px, -1px);
+  }
+</style>

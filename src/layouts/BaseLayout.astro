@@ -1,0 +1,69 @@
+---
+import { Font } from 'astro:assets';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE } from '../data/site';
+import { cleanPath } from '../lib/paths';
+import '../styles/global.css';
+
+interface Props {
+  /** Page title. The site name is added automatically; leave empty on the home page. */
+  title?: string;
+  /** Description for search engines and link previews. Defaults to the site description. */
+  description?: string;
+  /** Keep this page out of search results (used by the 404 page). */
+  noindex?: boolean;
+}
+
+const { title, description = SITE.description, noindex = false } = Astro.props;
+
+const pageTitle = title ? `${title} — ${SITE.name}` : SITE.name;
+const canonicalUrl = new URL(cleanPath(Astro.url.pathname), Astro.site);
+const socialImageUrl = new URL('/og-image.png', Astro.site);
+---
+
+<!doctype html>
+<html lang={SITE.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#f8f7f3" />
+
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={socialImageUrl} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${SITE.name}. ${SITE.description}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <Font cssVariable="--font-sans" preload />
+    <Font cssVariable="--font-serif" preload />
+
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main">
+      <div class="container">
+        <slot />
+      </div>
+    </main>
+    <Footer />
+  </body>
+</html>

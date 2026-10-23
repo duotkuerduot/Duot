@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import WritingFilter from '../components/WritingFilter.astro';
+import { SITE } from '../data/site';
+import { ARTICLES, newestFirst } from '../data/writing';
+---
+
+<BaseLayout
+  title="Writing"
+  description={`Artistic and technical writing by ${SITE.name}, published on Substack and Medium.`}
+>
+  <PageHeader title="Writing" intro="Things I’ve been thinking about, building, and learning." />
+  <WritingFilter articles={newestFirst(ARTICLES)} />
+</BaseLayout>
