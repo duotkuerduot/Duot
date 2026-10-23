@@ -1,4 +1,4 @@
-# Duot Kuer Duot — personal website
+# Duot Kuer — personal website
 
 The personal website of Duot Kuer Duot: a small, text-first corner of the internet for work, writing and ongoing explorations.
 

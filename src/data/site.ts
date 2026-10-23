@@ -4,7 +4,7 @@
  */
 
 export const SITE = {
-  name: 'Duot Kuer Duot',
+  name: 'Duot Kuer',
   /** Default description for search engines and link previews. */
   description:
     'I work with data and AI, explore ideas across disciplines, and build things aimed at solving real problems.',
