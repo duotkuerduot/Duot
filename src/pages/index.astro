@@ -36,14 +36,6 @@ const person = {
     </div>
   </section>
 
-  <section class="home-section" aria-labelledby="explorations-title">
-    <div class="section-heading">
-      <h2 id="explorations-title">Selected explorations</h2>
-      <ArrowLink href="/explorations" label="All explorations" />
-    </div>
-    <ExplorationList items={EXPLORATIONS} headingLevel={3} />
-  </section>
-
   <section class="home-section" aria-labelledby="writing-title">
     <div class="section-heading">
       <h2 id="writing-title">Recent writing</h2>
@@ -51,11 +43,19 @@ const person = {
     </div>
     <WritingList articles={recentWriting} headingLevel={3} showCategory />
   </section>
+
+  <section class="home-section" aria-labelledby="explorations-title">
+    <div class="section-heading">
+      <h2 id="explorations-title">Selected explorations</h2>
+      <ArrowLink href="/explorations" label="All explorations" />
+    </div>
+    <ExplorationList items={EXPLORATIONS} headingLevel={3} />
+  </section>
 </BaseLayout>
 
 <style>
   .intro {
-    padding-bottom: clamp(3.5rem, 2.5rem + 4vw, 6rem);
+    padding-bottom: clamp(2.75rem, 2rem + 2.5vw, 4rem);
   }
 
   .intro__statement {
