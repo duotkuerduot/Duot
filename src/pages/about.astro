@@ -8,40 +8,18 @@ import { PROFILES, SITE } from '../data/site';
 const substackAddress = new URL(PROFILES.substack.href).host;
 ---
 
-<BaseLayout
-  title="About"
-  description={`${SITE.name} is a data scientist based in ${SITE.location}, exploring how technology can solve problems in healthcare and energy.`}
->
+<BaseLayout title="About">
   <PageHeader title="About" />
-
   <ul class="about-list">
-    <li>Based in {SITE.location}.</li>
-    <li>
-      Exploring how technology can solve problems in healthcare and energy, and improve life more
-      generally.
-    </li>
-    <li>Currently working as a data scientist, applying machine learning and AI to solve issues.</li>
-    <li>
-      Love writing on Substack: <ExternalLink
-        href={PROFILES.substack.href}
-        label={substackAddress}
-        icon={false}
-      />.
-    </li>
-    <li>
-      My technical writing is on <ExternalLink
-        href={PROFILES.medium.href}
-        label={PROFILES.medium.label}
-        icon={false}
-      />.
-    </li>
-    <li>
-      My code and projects are on <ExternalLink
-        href={PROFILES.github.href}
-        label={PROFILES.github.label}
-        icon={false}
-      />.
-    </li>
+    <li>Based in Nairobi, Kenya.</li>
+    <li>Data scientist working with machine learning and AI.</li>
+    <li>Love art and writing about my thoughts and observations.</li>
+    <li>Interested in using technology to advance healthcare and find cures for diseases.</li>
+    <li>Currently exploring AI for drug discovery.</li>
+    <li>Interested in improving energy systems through technology.</li>
+    <li><a href="https://duotkuerduot.substack.com/" target="_blank" rel="noopener">Substack</a></li>
+    <li><a href="https://medium.com/@duotkuerduot" target="_blank" rel="noopener">Medium</a></li>
+    <li><a href="https://github.com/duotkuerduot" target="_blank" rel="noopener">GitHub</a></li>
   </ul>
 </BaseLayout>
 
@@ -63,5 +41,10 @@ const substackAddress = new URL(PROFILES.substack.href).host;
 
   .about-list li::marker {
     color: var(--color-accent);
+  }
+
+  .about-list a {
+    font-weight: 700;
+    color: var(--color-accent-strong);
   }
 </style>
